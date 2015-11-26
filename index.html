@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>label</title>
+	<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<style>
+		#outline{width:100%;height:500px;}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="form-group">
+					<input type="file" class="form-control" id="post-file">
+				</div>
+			</div>
+			<div class="col-md-8 col-md-offset-2">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">编辑区</h3>
+					</div>
+					<div class="panel-body">
+						<div id="outline">
+							<canvas id="get_image"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		var postFile = {
+			init:function(){
+				var t = this;
+				t.outline = document.getElementById('outline');
+				t.get_image = document.getElementById('get_image');
+				document.getElementById('post-file').addEventListener('change', t.postFile,false)
+			},
+
+			postFile:function(){
+				var fileList = this.files[0];
+		        var oFReader = new FileReader();
+		        oFReader.readAsDataURL(fileList);
+		        oFReader.onload = function (oFREvent) { 
+		            postFile.paintImage(oFREvent.target.result);
+		        };
+			},
+
+			paintImage:function(url){
+				var t = this;
+				var ctx = t.get_image.getContext('2d');
+				var img = new Image();
+				var getImageCas = {
+					width:0,
+					height:0,
+					marginLeft:0,
+					marginTop:0
+				}
+				img.src = url;
+				t.get_image.width = t.outline.offsetWidth;
+				t.get_image.height = t.outline.offsetHeight
+				img.onload = function(){
+					if(img.width < t.get_image.width && img.height < t.get_image.height){
+						getImageCas.marginLeft = (t.outline.offsetWidth - img.width)/2
+						getImageCas.marginTop = (t.outline.offsetHeight - img.height)/2
+						ctx.translate(getImageCas.marginLeft,getImageCas.marginTop)
+						ctx.drawImage(img,0,0,img.width,img.height)
+					}
+				}
+			}
+		}
+		postFile.init();
+	</script>
+</body>
+</html>
